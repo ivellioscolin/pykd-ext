@@ -6,7 +6,7 @@ Using Pykd-Ext - is recommended way to use pykd with windbg.
 
 #### Download
 
-[All releases](/wikis/Downloads)
+[All releases](/../wikis/Downloads)
 
 #### Installation pykd.dll
 1. Locate your windbg installation place ( for example: C:\Program Files (x86)\Windows Kits\10\Debuggers\x64 )
