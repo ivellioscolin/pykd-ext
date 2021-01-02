@@ -286,7 +286,6 @@ std::auto_ptr<PythonSingleton>  PythonSingleton::m_singleton;
 
 HMODULE LoadPythonForKey(HKEY installPathKey, int majorVersion, int minorVersion)
 {
-
     HMODULE  hmodule = NULL;
 
     char  installPath[1000];
@@ -300,14 +299,19 @@ HMODULE LoadPythonForKey(HKEY installPathKey, int majorVersion, int minorVersion
         std::stringstream  imagePath;
         imagePath << installPath << dllName.str();
 
-        hmodule = LoadLibraryExA(imagePath.str().c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+        //load by full string
+        hmodule = LoadLibraryA(imagePath.str().c_str());
         if (hmodule)
             return hmodule;
 
+        hmodule = LoadLibraryExA(imagePath.str().c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+        if (hmodule)
+           return hmodule;
+
+        //search in common places as system32
         hmodule = LoadLibraryA(dllName.str().c_str());
         if (hmodule)
             return hmodule;
-
     }
 
     return NULL;
