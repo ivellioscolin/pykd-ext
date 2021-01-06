@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 static int  defaultMajorVersion = 3;
-static int  defaultMinorVersion = 8;
+static int  defaultMinorVersion = 9;
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -301,6 +301,19 @@ help(
 
 //////////////////////////////////////////////////////////////////////////////
 
+bool isClassicWindbg()
+{
+    std::vector<wchar_t>  exebuffer(0x10000);
+    auto  exePathLength = GetModuleFileName(NULL, exebuffer.data(), static_cast<DWORD>(exebuffer.size()));
+
+    std::wstring  exepath{ exebuffer.data(), exePathLength };
+    const std::wstring  windbgexe{ L"windbg.exe" };
+
+    return (exepath.size() >= windbgexe.size()) && (exepath.rfind(windbgexe) == exepath.size() - windbgexe.size());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
 
 static const std::regex  shebangRe("^#!\\s*python([2,3])(?:\\.(\\d))?$");
 
@@ -320,7 +333,14 @@ py(
 {
     ULONG   oldMask;
     client->GetOutputMask(&oldMask);
-    client->SetOutputMask( (oldMask & ~DEBUG_OUTPUT_PROMPT) | DEBUG_OUTPUT_STATUS);
+    ULONG mask = oldMask | DEBUG_OUTPUT_STATUS;
+
+    if (isClassicWindbg())
+    {
+        mask = mask & ~DEBUG_OUTPUT_PROMPT;
+    }
+
+    client->SetOutputMask(mask);
 
     try {
 
@@ -681,7 +701,7 @@ std::string getScriptFileName(const std::string &scriptName)
             NULL,
             scriptName.c_str(),
             ext,
-            pathBuffer.size(),
+            static_cast<DWORD>(pathBuffer.size()),
             &pathBuffer.front(),
             NULL );
 
@@ -779,7 +799,7 @@ void printString(PDEBUG_CLIENT client, ULONG mask, const char* str)
         std::string  line;
         std::getline(sstr, line);
 
-        if ( prefer_dml && mask == DEBUG_OUTPUT_ERROR )
+        if (isClassicWindbg() && prefer_dml && mask == DEBUG_OUTPUT_ERROR )
         {
             line = std::regex_replace(line, std::regex("&"), "&amp;");
             line = std::regex_replace(line, std::regex("<"), "&lt;");
