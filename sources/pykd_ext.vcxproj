@@ -101,7 +101,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PYKD_BOOTSTRAPPER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\kdlibcpp\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\kdlibcpp\include;$(ProjectDir)\..\boost;$(ProjectDir)\..\..\kdlibcpp\boost</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -110,6 +110,32 @@
       <OutputFile>$(OutDir)pykd$(TargetExt)</OutputFile>
       <AdditionalDependencies>comsuppw.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>set boost_kdlib=true
+if not exist "$(ProjectDir)..\..\pykd.sln" (
+  set boost_kdlib=false
+)
+
+if not exist "$(ProjectDir)..\..\kdlibcpp\kdlibcpp.sln" (
+  set boost_kdlib=false
+)
+
+if "%boost_kdlib%"=="true" (
+    echo Use boost from kdlibcpp submodule.
+    pushd $(ProjectDir)..\..\kdlibcpp\boost\
+    call $(ProjectDir)..\..\kdlibcpp\boost\bootstrap.bat
+    $(ProjectDir)..\..\kdlibcpp\boost\b2.exe --with-headers link=static runtime-link=static,shared address-model=32 runtime-debugging=on variant=debug
+    popd
+) else (
+    echo Use boost from submodule.
+    git -C "$(ProjectDir)..\boost" submodule update --init --recursive
+    pushd $(ProjectDir)..\boost\
+    call $(ProjectDir)..\boost\bootstrap.bat
+    $(ProjectDir)..\boost\b2.exe --with-headers link=static runtime-link=static,shared address-model=32 runtime-debugging=on variant=debug
+    popd
+)
+set boost_kdlib=</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -118,7 +144,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PYKD_BOOTSTRAPPER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\kdlibcpp\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\kdlibcpp\include;$(ProjectDir)\..\boost;$(ProjectDir)\..\..\kdlibcpp\boost</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,6 +153,32 @@
       <OutputFile>$(OutDir)pykd$(TargetExt)</OutputFile>
       <AdditionalDependencies>comsuppw.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>set boost_kdlib=true
+if not exist "$(ProjectDir)..\..\pykd.sln" (
+  set boost_kdlib=false
+)
+
+if not exist "$(ProjectDir)..\..\kdlibcpp\kdlibcpp.sln" (
+  set boost_kdlib=false
+)
+
+if "%boost_kdlib%"=="true" (
+    echo Use boost from kdlibcpp submodule.
+    pushd $(ProjectDir)..\..\kdlibcpp\boost\
+    call $(ProjectDir)..\..\kdlibcpp\boost\bootstrap.bat
+    $(ProjectDir)..\..\kdlibcpp\boost\b2.exe --with-headers link=static runtime-link=static,shared address-model=64 runtime-debugging=on variant=debug
+    popd
+) else (
+    echo Use boost from submodule.
+    git -C "$(ProjectDir)..\boost" submodule update --init --recursive
+    pushd $(ProjectDir)..\boost\
+    call $(ProjectDir)..\boost\bootstrap.bat
+    $(ProjectDir)..\boost\b2.exe --with-headers link=static runtime-link=static,shared address-model=64 runtime-debugging=on variant=debug
+    popd
+)
+set boost_kdlib=</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -137,7 +189,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PYKD_BOOTSTRAPPER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\kdlibcpp\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\kdlibcpp\include;$(ProjectDir)\..\boost;$(ProjectDir)\..\..\kdlibcpp\boost</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -149,6 +201,32 @@
       <OutputFile>$(OutDir)pykd$(TargetExt)</OutputFile>
       <AdditionalDependencies>comsuppw.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>set boost_kdlib=true
+if not exist "$(ProjectDir)..\..\pykd.sln" (
+  set boost_kdlib=false
+)
+
+if not exist "$(ProjectDir)..\..\kdlibcpp\kdlibcpp.sln" (
+  set boost_kdlib=false
+)
+
+if "%boost_kdlib%"=="true" (
+    echo Use boost from kdlibcpp submodule.
+    pushd $(ProjectDir)..\..\kdlibcpp\boost\
+    call $(ProjectDir)..\..\kdlibcpp\boost\bootstrap.bat
+    $(ProjectDir)..\..\kdlibcpp\boost\b2.exe --with-headers link=static runtime-link=static,shared address-model=32 runtime-debugging=off variant=release
+    popd
+) else (
+    echo Use boost from submodule.
+    git -C "$(ProjectDir)..\boost" submodule update --init --recursive
+    pushd $(ProjectDir)..\boost\
+    call $(ProjectDir)..\boost\bootstrap.bat
+    $(ProjectDir)..\boost\b2.exe --with-headers link=static runtime-link=static,shared address-model=32 runtime-debugging=off variant=release
+    popd
+)
+set boost_kdlib=</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -159,7 +237,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PYKD_BOOTSTRAPPER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\kdlibcpp\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\kdlibcpp\include;$(ProjectDir)\..\boost;$(ProjectDir)\..\..\kdlibcpp\boost</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -171,6 +249,32 @@
       <OutputFile>$(OutDir)pykd$(TargetExt)</OutputFile>
       <AdditionalDependencies>dbgeng.lib;comsuppw.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>set boost_kdlib=true
+if not exist "$(ProjectDir)..\..\pykd.sln" (
+  set boost_kdlib=false
+)
+
+if not exist "$(ProjectDir)..\..\kdlibcpp\kdlibcpp.sln" (
+  set boost_kdlib=false
+)
+
+if "%boost_kdlib%"=="true" (
+    echo Use boost from kdlibcpp submodule.
+    pushd $(ProjectDir)..\..\kdlibcpp\boost\
+    call $(ProjectDir)..\..\kdlibcpp\boost\bootstrap.bat
+    $(ProjectDir)..\..\kdlibcpp\boost\b2.exe --with-headers link=static runtime-link=static,shared address-model=64 runtime-debugging=off variant=release
+    popd
+) else (
+    echo Use boost from submodule.
+    git -C "$(ProjectDir)..\boost" submodule update --init --recursive
+    pushd $(ProjectDir)..\boost\
+    call $(ProjectDir)..\boost\bootstrap.bat
+    $(ProjectDir)..\boost\b2.exe --with-headers link=static runtime-link=static,shared address-model=64 runtime-debugging=off variant=release
+    popd
+)
+set boost_kdlib=</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="arglist.h" />
@@ -212,19 +316,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="export.def" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="version.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(SolutionDir)\packages\boost.1.67.0.0\build\boost.targets" Condition="Exists('$(SolutionDir)\packages\boost.1.67.0.0\build\boost.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\packages\boost.1.67.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\packages\boost.1.67.0.0\build\boost.targets'))" />
   </Target>
 </Project>
