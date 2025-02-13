@@ -361,7 +361,13 @@ py(
         {
             scriptFileName = getScriptFileName(opts.args[0]);
             if ( scriptFileName.empty() )
-                throw std::invalid_argument("script not found\n");
+            {
+                const char* msg = "script not found: %s";
+                size_t size = std::snprintf(nullptr, 0, msg, opts.args[0].c_str()) + 1;
+                std::unique_ptr<char[]> buf(new char[size]);
+                std::snprintf(buf.get(), size, msg, opts.args[0].c_str());
+                throw std::invalid_argument(std::string(buf.get(), buf.get() + size));
+            }
         }
 
         if ( !opts.runModule && majorVersion == -1 && minorVersion == -1 )
@@ -694,6 +700,12 @@ std::string getScriptFileName(const std::string &scriptName)
         return "";
     }
 
+    size_t pos = 0;
+    while ((pos = scriptName.find(std::string("\\\\"), pos)) != std::string::npos) {
+        ++searchResult;
+        pos += std::string("\\\\").length();
+    }
+
     std::vector<char>  pathBuffer(searchResult);
 
     searchResult = 
@@ -705,7 +717,7 @@ std::string getScriptFileName(const std::string &scriptName)
             &pathBuffer.front(),
             NULL );
 
-    return std::string(&pathBuffer.front(), searchResult);
+    return std::string(&pathBuffer.front());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
