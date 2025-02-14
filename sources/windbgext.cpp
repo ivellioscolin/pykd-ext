@@ -18,8 +18,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-static int  defaultMajorVersion = 3;
-static int  defaultMinorVersion = 9;
+static int  defaultMajorVersion = -1;
+static int  defaultMinorVersion = -1;
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -100,6 +100,7 @@ DebugExtensionInitialize(
     PULONG  Flags
 )
 {
+    getDefaultPythonVersion(defaultMajorVersion, defaultMinorVersion);
     return S_OK;
 }
 
@@ -208,12 +209,29 @@ selectVersion(
         int  majorVersion = opts.pyMajorVersion;
         int  minorVersion = opts.pyMinorVersion;
 
+        if (!opts.args.empty())
+        {
+            std::stringstream sstr;
+            sstr << "Unrecognized version string: \"";
+            for (std::vector<std::string>::iterator it = opts.args.begin(); it != opts.args.end(); ++it)
+            {
+                sstr << *it << " ";
+            }
+            sstr << "\". Expect \"!select -major.minor\"";
+            printString(client, DEBUG_OUTPUT_NORMAL, sstr.str().c_str() );
+        }
+
         getPythonVersion(majorVersion, minorVersion);
 
         if ( opts.pyMajorVersion == majorVersion && opts.pyMinorVersion == minorVersion )
         {
             defaultMajorVersion = majorVersion;
             defaultMinorVersion = minorVersion;
+        }
+        {
+            std::stringstream sstr;
+            sstr << "Active Python Interpreter: " << defaultMajorVersion << "." << defaultMinorVersion;
+            printString(client, DEBUG_OUTPUT_NORMAL, sstr.str().c_str());
         }
 
     }
