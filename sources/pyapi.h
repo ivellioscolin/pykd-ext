@@ -96,7 +96,7 @@ void PyErr_Clear();
 
 PyObject* PyFile_FromString(char *filename, char *mode);
 FILE* PyFile_AsFile(PyObject *pyfile);
-FILE* _Py_fopen(const char* filename, const char* mode);
+FILE* _Py_fopen_obj(PyObject *pyfile, const char* mode);
 
 PyObject* PyUnicode_FromString(const char*  str);
 PyObject* PyInstanceMethod_New(PyObject *func);
