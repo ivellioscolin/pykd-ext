@@ -473,8 +473,11 @@ py(
                     if ((minorVersion >= 5) && (minorVersion <= 13)) {
                         PyObjectRef pyfile = PyUnicode_FromString(scriptFileName.c_str());
                         fs = _Py_fopen_obj(pyfile, "r");
+                    } else if (minorVersion >= 14){
+                        PyObjectRef pyfile = PyUnicode_FromString(scriptFileName.c_str());
+                        fs = Py_fopen(pyfile, "r");
                     } else {
-                        throw std::invalid_argument("Unsupported C API _Py_fopen_obj\n");
+                        throw std::invalid_argument("No supported C API to open file\n");
                     }
 
                     if ( !fs )

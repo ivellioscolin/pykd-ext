@@ -130,6 +130,7 @@ public:
     PyObject* ( *PyInstanceMethod_New)(PyObject *func);
     size_t( *PyUnicode_AsWideChar)(PyObject *unicode, wchar_t *w, size_t size);
     FILE* (  *_Py_fopen_obj)(PyObject *pyfile, const char* mode);
+    FILE* (  *Py_fopen)(PyObject *pyfile, const char* mode);
     int( *Py_AddPendingCall)(int(*func)(void *), void *arg);
     PyGILState_STATE( *PyGILState_Ensure)();
     void( *PyGILState_Release)(PyGILState_STATE state);
@@ -495,6 +496,7 @@ PyModule::PyModule(int majorVesion, int minorVersion)
     *reinterpret_cast<FARPROC*>(&PyInstanceMethod_New) = GetProcAddress(m_handlePython, "PyInstanceMethod_New");
 
     *reinterpret_cast<FARPROC*>(&_Py_fopen_obj) = GetProcAddress(m_handlePython, "_Py_fopen_obj");
+    *reinterpret_cast<FARPROC*>(&Py_fopen) = GetProcAddress(m_handlePython, "Py_fopen");
     *reinterpret_cast<FARPROC*>(&Py_AddPendingCall) = GetProcAddress(m_handlePython, "Py_AddPendingCall");
     *reinterpret_cast<FARPROC*>(&PyGILState_Ensure) = GetProcAddress(m_handlePython, "PyGILState_Ensure");
     *reinterpret_cast<FARPROC*>(&PyGILState_Release) = GetProcAddress(m_handlePython, "PyGILState_Release");
@@ -900,6 +902,11 @@ void  PyEval_RestoreThread(PyThreadState *tstate)
 FILE* _Py_fopen_obj(PyObject *pyfile, const char* mode)
 {
     return PythonSingleton::get()->currentInterpreter()->m_module->_Py_fopen_obj(pyfile, mode);
+}
+
+FILE* Py_fopen(PyObject *pyfile, const char* mode)
+{
+    return PythonSingleton::get()->currentInterpreter()->m_module->Py_fopen(pyfile, mode);
 }
 
 int  Py_AddPendingCall(int(*func)(void *), void *arg)
