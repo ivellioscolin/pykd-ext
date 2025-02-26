@@ -98,6 +98,7 @@ PyObject* PyFile_FromString(char *filename, char *mode);
 FILE* PyFile_AsFile(PyObject *pyfile);
 FILE* _Py_fopen_obj(PyObject *pyfile, const char* mode);
 FILE* Py_fopen(PyObject *pyfile, const char* mode);
+int Py_fclose(FILE *file);
 
 PyObject* PyUnicode_FromString(const char*  str);
 PyObject* PyInstanceMethod_New(PyObject *func);

@@ -482,8 +482,13 @@ py(
 
                     if ( !fs )
                         throw std::invalid_argument("Unable to open script\n");
-                    
-                      PyObjectRef result = PyRun_FileExFlags(fs, scriptFileName.c_str(), Py_file_input, globals, globals, 1, NULL);
+
+                    PyObjectRef result = PyRun_FileExFlags(fs, scriptFileName.c_str(), Py_file_input, globals, globals, 1, NULL);
+                    if ((minorVersion >= 5) && (minorVersion <= 13)) {
+                        fclose(fs);
+                    } else if (minorVersion >= 14){
+                        Py_fclose(fs);
+                    }
                 }
             }
             else
