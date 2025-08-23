@@ -469,26 +469,22 @@ py(
                 }
                 else
                 {
-                    FILE* fs = NULL;
-                    if ((minorVersion >= 5) && (minorVersion <= 13)) {
-                        PyObjectRef pyfile = PyUnicode_FromString(scriptFileName.c_str());
-                        fs = _Py_fopen_obj(pyfile, "r");
-                    } else if (minorVersion >= 14){
-                        PyObjectRef pyfile = PyUnicode_FromString(scriptFileName.c_str());
-                        fs = Py_fopen(pyfile, "r");
-                    } else {
-                        throw std::invalid_argument("No supported C API to open file\n");
-                    }
+                  std::ifstream file{ scriptFileName.c_str( ), std::ios::binary };
+                  if ( !file.is_open( ) ) {
+                    throw std::invalid_argument( "script not found\n" );
+                  }
 
-                    if ( !fs )
-                        throw std::invalid_argument("Unable to open script\n");
+                  file.seekg(0, std::ios::end);
+                  std::streamsize size = file.tellg();
+                  file.seekg(0, std::ios::beg);
 
-                    PyObjectRef result = PyRun_FileExFlags(fs, scriptFileName.c_str(), Py_file_input, globals, globals, 1, NULL);
-                    if ((minorVersion >= 5) && (minorVersion <= 13)) {
-                        fclose(fs);
-                    } else if (minorVersion >= 14){
-                        Py_fclose(fs);
-                    }
+                  std::string content(size, '\0');
+                  if (file.read(&content[0], size)) {
+                    PyObjectRef result =
+                        PyRun_String(content.c_str(), Py_file_input, globals, globals);
+                  }
+
+                  file.close();
                 }
             }
             else
